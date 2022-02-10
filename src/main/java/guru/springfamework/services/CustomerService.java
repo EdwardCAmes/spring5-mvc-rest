@@ -11,4 +11,5 @@ public interface CustomerService {
     CustomerDTO getCustomerByLastName(String lastName);
     CustomerDTO createNewCustomer(CustomerDTO customerDTO);
     CustomerDTO saveCustomerByDto(Long id, CustomerDTO customerDTO);
+    CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO);
 }
