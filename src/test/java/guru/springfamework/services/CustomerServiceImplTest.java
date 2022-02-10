@@ -13,9 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class CustomerServiceImplTest {
     public static final String FIRST_NAME = "Joe";
@@ -120,5 +119,16 @@ class CustomerServiceImplTest {
 
         // Then
         assertEquals(customerDTO.getFirstName(), savedDto.getFirstName());
+    }
+
+    @Test
+    void deleteCustomerById() {
+        Long id = 1L;
+
+        // When
+        customerService.deleteCustomerById(id);
+
+        // Then
+        verify(customerRepository, times(1)).deleteById( anyLong() );
     }
 }
