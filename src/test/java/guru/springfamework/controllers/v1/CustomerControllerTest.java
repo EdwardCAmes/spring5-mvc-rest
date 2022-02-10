@@ -19,12 +19,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CustomerControllerTest {
+class CustomerControllerTest extends AbstractRestControllerTest {
     public static final String FIRST_NAME = "Joe";
     public static final String LAST_NAME = "Blogs";
     public static final long ID = 1L;
@@ -70,5 +71,28 @@ class CustomerControllerTest {
         mockMvc.perform( get("/api/v1/customers/firstName/Joe").contentType(MediaType.APPLICATION_JSON) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath("$.firstName", equalTo(FIRST_NAME)));
+    }
+
+    @Test
+    void createNewCustomer() throws Exception {
+        // Given
+        CustomerDTO customer = new CustomerDTO();
+        customer.setFirstName("Fred");
+        customer.setLastName("Flintstone");
+
+        CustomerDTO returnedDto = new CustomerDTO();
+        returnedDto.setFirstName(customer.getFirstName());
+        returnedDto.setLastName(customer.getLastName());
+
+        when( customerService.createNewCustomer(customer) ).thenReturn(returnedDto);
+
+        // When
+        // Then
+        mockMvc.perform(
+                post("/api/v1/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content( asJsonString(customer) ) )
+                .andExpect( status().isCreated() )
+                .andExpect( jsonPath("$.firstName", equalTo("Fred")));
     }
 }
