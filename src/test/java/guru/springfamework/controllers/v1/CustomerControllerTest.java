@@ -18,7 +18,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -94,5 +94,29 @@ class CustomerControllerTest extends AbstractRestControllerTest {
                         .content( asJsonString(customer) ) )
                 .andExpect( status().isCreated() )
                 .andExpect( jsonPath("$.firstName", equalTo("Fred")));
+    }
+
+    @Test
+    void testUpdateCustomer() throws Exception {
+        // Given
+        CustomerDTO customer = new CustomerDTO();
+        customer.setFirstName("Fred");
+        customer.setLastName("Flintstone");
+
+        CustomerDTO returnedDto = new CustomerDTO();
+        returnedDto.setFirstName(customer.getFirstName());
+        returnedDto.setLastName(customer.getLastName());
+
+        when( customerService.saveCustomerByDto(anyLong(), any(CustomerDTO.class) ) ).thenReturn(returnedDto);
+
+        // When
+        // Then
+        mockMvc.perform(
+                        put("/api/v1/customers/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content( asJsonString(customer) ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath("$.firstName", equalTo("Fred")))
+                .andExpect( jsonPath("$.lastName", equalTo("Flintstone")));
     }
 }
